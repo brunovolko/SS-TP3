@@ -9,7 +9,6 @@ public class Config {
     private double widthLength;
     private double heightLength;
     private double grooveLength;
-    private double grooveEdgeRadius;
     private int numberParticles;
 
 
@@ -43,11 +42,6 @@ public class Config {
             grooveLength = Double.parseDouble(staticReader.nextLine());
         else
             throw new Exception("Groove length must be in line 5");
-
-        if(staticReader.hasNextLine())
-            grooveEdgeRadius = Double.parseDouble(staticReader.nextLine());
-        else
-            throw new Exception("Groove edge radius must be in line 6");
 
         if(staticReader.hasNextLine())
             numberParticles = Integer.parseInt(staticReader.nextLine());
@@ -112,10 +106,6 @@ public class Config {
 
     public double getGrooveLength() {
         return grooveLength;
-    }
-
-    public double getGrooveEdgeRadius() {
-        return grooveEdgeRadius;
     }
 
     public int getNumberParticles() {

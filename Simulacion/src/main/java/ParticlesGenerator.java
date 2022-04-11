@@ -36,7 +36,7 @@ public class ParticlesGenerator {
             double limiteSuperiorParaCentro = config.getHeightLength() - config.getParticleRadius();
             double limiteInferiorParaCentro = 0 + config.getParticleRadius();
             double limiteIzquierdoParaCentro = 0 + config.getParticleRadius();
-            double limiteDerechoParaCentro = config.getWidthLength()/2 - config.getGrooveEdgeRadius() - config.getParticleRadius();
+            double limiteDerechoParaCentro = config.getWidthLength()/2 - config.getParticleRadius();
 
             List<Particle> generatedParticles = new ArrayList<>(config.getNumberParticles());
             Random random = new Random(System.currentTimeMillis());
