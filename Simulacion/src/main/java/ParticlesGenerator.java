@@ -48,7 +48,7 @@ public class ParticlesGenerator {
                 degree = random.nextDouble()*2*Math.PI;
                 newvx = 0.01 * Math.cos(degree);
                 newvy = 0.01 * Math.sin(degree);
-                newParticle = new Particle(newx, newy, config.getParticleRadius(), config.getMass(), newvx, newvy);
+                newParticle = new Particle(newx, newy, config.getParticleRadius(), config.getMass(), newvx, newvy, false);
                 if(noColitions(generatedParticles, newParticle))
                     generatedParticles.add(newParticle);
             }

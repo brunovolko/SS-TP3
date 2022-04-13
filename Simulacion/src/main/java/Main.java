@@ -13,6 +13,7 @@ public class Main {
             while(!environment.stopCriteria()) {
                 environment.evolve();
                 saveState(environment.getState());
+                environment.calculateNewVelocities();
                 
             }
 

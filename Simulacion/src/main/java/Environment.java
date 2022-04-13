@@ -8,7 +8,7 @@ public class Environment {
     private double width, height, grooveLength;
     private double[][] collisionTimes;
     private double timeForFirstCollision;
-    Particle collitedParticle1, collitedParticle2;
+    CollitedObject collitedObject1, collitedObject2;
 
     private enum walls {UPPER, LOWER, LEFT, RIGHT, UPPER_GROOVE, LOWER_GROOVE};
 
@@ -25,10 +25,10 @@ public class Environment {
         return this.particles;
     }
 
-    private void updateTimeForFirstCollision(double time, Particle particle1, Particle particle2) {
+    private void updateTimeForFirstCollision(double time, CollitedObject collitedObject1, CollitedObject collitedObject2) throws Exception {
         this.timeForFirstCollision = time;
-        this.collitedParticle1 = particle1;
-        this.collitedParticle2 = particle2;
+        this.collitedObject1 = collitedObject1;
+        this.collitedObject2 = collitedObject2;
     }
 
     private double timeToParticlesCollision(Particle particle1, Particle particle2) {
@@ -47,20 +47,26 @@ public class Environment {
     }
 
     public void recalculateCollisions(List<Particle> particlesToRecalculate) {
-        //TODO considerar las 6 paredes y las partiuclas de radio 0 del groove
-        int idxAux; double time;
-        Particle particle1, particle2;
-        for(int i = 0; i < particlesToRecalculate.size(); i++) {
-            for (int j = i+1; j < this.collisionTimes.length - walls.values().length; j++) {
-                particle1 = particlesToRecalculate.get(i);
-                idxAux = this.particles.indexOf(particle1);
-                particle2 = this.particles.get(j);
-                time = this.timeToParticlesCollision(particle1, particle2);
-                this.collisionTimes[idxAux][j] = time;
-                this.collisionTimes[j][idxAux] = time;
-                if(time < timeForFirstCollision)
-                    this.updateTimeForFirstCollision(time, particle1, particle2); //For particle-particle collision
+        try {
+            //TODO considerar las 6 paredes
+            //TODO onsiderarlas partiuclas de radio 0 del groove
+            int idxAux;
+            double time;
+            Particle particle1, particle2;
+            for (int i = 0; i < particlesToRecalculate.size(); i++) {
+                for (int j = i + 1; j < this.collisionTimes.length - walls.values().length; j++) {
+                    particle1 = particlesToRecalculate.get(i);
+                    idxAux = this.particles.indexOf(particle1);
+                    particle2 = this.particles.get(j);
+                    time = this.timeToParticlesCollision(particle1, particle2);
+                    this.collisionTimes[idxAux][j] = time;
+                    this.collisionTimes[j][idxAux] = time;
+                    if (time < timeForFirstCollision)
+                        this.updateTimeForFirstCollision(time, new CollitedObject(particle1), new CollitedObject(particle2)); //For particle-particle collision
+                }
             }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
     }
 
@@ -74,6 +80,24 @@ public class Environment {
             particle.setY(particle.getY() + particle.getVy()*this.timeForFirstCollision);
             this.particles.set(i, particle);
         }
+    }
+
+    public void calculateNewVelocities() {
+        if(collitedObject1.getObjectType() == collitedObject2.getObjectType()){
+            Particle particle1 = (Particle) collitedObject1.getObject();
+            Particle particle2 = (Particle) collitedObject2.getObject();
+            if(particle2.isFixed()) {
+                //TODO particle-grooveparticle
+            } else if(particle1.isFixed()) {
+                //TODO particle-grooveparticle
+
+            } else {
+                CollisionOperators.particleToParticle(this.particles, particle1, particle2);
+            }
+        } else {
+            //TODO particle-wall
+        }
+
     }
 
 

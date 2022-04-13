@@ -2,14 +2,16 @@ import java.util.Objects;
 
 public class Particle {
     private double x, y, radius, mass, vx, vy;
+    private boolean fixed;
 
-    public Particle(double x, double y, double radius, double mass, double vx, double vy) {
+    public Particle(double x, double y, double radius, double mass, double vx, double vy, boolean fixed) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.mass = mass;
         this.vx = vx;
         this.vy = vy;
+        this.fixed = fixed;
     }
 
     public double getX() {
@@ -58,6 +60,10 @@ public class Particle {
 
     public void setVy(double vy) {
         this.vy = vy;
+    }
+
+    public boolean isFixed() {
+        return fixed;
     }
 
     public boolean isTouching(Particle other) {

@@ -79,7 +79,8 @@ public class Config {
                     particleRadius,
                     mass,
                     Double.parseDouble(parts[2]),
-                    Double.parseDouble(parts[3])));
+                    Double.parseDouble(parts[3]),
+                    false));
         }
         dynamicReader.close();
     }
