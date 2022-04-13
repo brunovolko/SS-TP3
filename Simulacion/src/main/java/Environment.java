@@ -1,6 +1,9 @@
 import javafx.geometry.Pos;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Environment {
 
@@ -19,10 +22,19 @@ public class Environment {
         this.grooveLength = grooveLength;
         this.collisionTimes = new double[particles.size()+walls.values().length][particles.size()+walls.values().length];
         this.timeForFirstCollision = Double.POSITIVE_INFINITY;
+        this.collitedObject1 = null;
+        this.collitedObject2 = null;
     }
 
     public List<Particle> getState() {
         return this.particles;
+    }
+
+    public List<Particle> getParticlesToRecalculate() {
+        if(this.collitedObject1 == null && this.collitedObject2 == null)
+            return this.getState();  //With all the particles, 1st time
+        else
+            return Arrays.stream(new Object[]{collitedObject1.getObject(), collitedObject2.getObject()}).map(o -> (Particle)o).collect(Collectors.toList());
     }
 
     private void updateTimeForFirstCollision(double time, CollitedObject collitedObject1, CollitedObject collitedObject2) throws Exception {
@@ -46,7 +58,7 @@ public class Environment {
 
     }
 
-    public void recalculateCollisions(List<Particle> particlesToRecalculate) {
+    public double recalculateCollisions(List<Particle> particlesToRecalculate) {
         try {
             //TODO considerar las 6 paredes
             //TODO onsiderarlas partiuclas de radio 0 del groove
@@ -68,6 +80,7 @@ public class Environment {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
+        return this.timeForFirstCollision;
     }
 
 

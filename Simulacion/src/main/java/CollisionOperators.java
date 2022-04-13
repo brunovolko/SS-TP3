@@ -9,7 +9,7 @@ public class CollisionOperators {
         double J = (2*particle1.getMass()*particle2.getMass()*deltaVdeltaR) / (sigma*(particle1.getMass()+particle2.getMass()));
         double Jx = (J * (particle2.getX() - particle1.getX()))/sigma;
         double Jy = (J * (particle2.getY() - particle1.getY()))/sigma;
-        
+
         particle1.setVx(particle1.getVx() + Jx/particle1.getMass());
         particle1.setVy(particle1.getVy() + Jy/particle1.getMass());
         particle2.setVx(particle2.getVx() - Jx/particle2.getMass());
