@@ -13,6 +13,8 @@ public class Environment {
     private double timeForFirstCollision;
     CollitedObject collitedObject1, collitedObject2;
 
+
+
     private enum walls {UPPER, LOWER, LEFT, RIGHT, UPPER_GROOVE, LOWER_GROOVE};
 
     public Environment(List<Particle> particles, double width, double height, double grooveLength) {
@@ -24,6 +26,7 @@ public class Environment {
         this.timeForFirstCollision = Double.POSITIVE_INFINITY;
         this.collitedObject1 = null;
         this.collitedObject2 = null;
+
     }
 
     public List<Particle> getState() {
@@ -66,15 +69,17 @@ public class Environment {
             double time;
             Particle particle1, particle2;
             for (int i = 0; i < particlesToRecalculate.size(); i++) {
-                for (int j = i + 1; j < this.collisionTimes.length - walls.values().length; j++) {
-                    particle1 = particlesToRecalculate.get(i);
-                    idxAux = this.particles.indexOf(particle1);
-                    particle2 = this.particles.get(j);
-                    time = this.timeToParticlesCollision(particle1, particle2);
-                    this.collisionTimes[idxAux][j] = time;
-                    this.collisionTimes[j][idxAux] = time;
-                    if (time < timeForFirstCollision)
-                        this.updateTimeForFirstCollision(time, new CollitedObject(particle1), new CollitedObject(particle2)); //For particle-particle collision
+                for (int j = 0; j < this.collisionTimes.length - walls.values().length; j++) {
+                    if(!particlesToRecalculate.get(i).equals(this.particles.get(j))) {
+                        particle1 = particlesToRecalculate.get(i);
+                        idxAux = this.particles.indexOf(particle1);
+                        particle2 = this.particles.get(j);
+                        time = this.timeToParticlesCollision(particle1, particle2);
+                        this.collisionTimes[idxAux][j] = time;
+                        this.collisionTimes[j][idxAux] = time;
+                        if (time < timeForFirstCollision) //TODO mal, hay que recorrer toda la matriz
+                            this.updateTimeForFirstCollision(time, new CollitedObject(particle1), new CollitedObject(particle2)); //For particle-particle collision
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -114,15 +119,9 @@ public class Environment {
     }
 
 
-    private boolean aux = false;
+    private int counter = 0;
     public boolean stopCriteria() {
-        if(aux)
-            return true;
-        else
-        {
-            aux = true;
-            return false;
-        }
+        return counter++ == 5;
     }
 
 
