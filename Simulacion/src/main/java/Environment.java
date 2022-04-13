@@ -1,4 +1,4 @@
-import javafx.geometry.Pos;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,20 +12,21 @@ public class Environment {
     private double[][] collisionTimes;
     private double timeForFirstCollision;
     CollitedObject collitedObject1, collitedObject2;
+    Particle grooveParticleTop,grooveParticleBottom;
 
 
-
-    private enum walls {UPPER, LOWER, LEFT, RIGHT, UPPER_GROOVE, LOWER_GROOVE};
 
     public Environment(List<Particle> particles, double width, double height, double grooveLength) {
         this.particles = particles;
         this.width = width;
         this.height = height;
         this.grooveLength = grooveLength;
-        this.collisionTimes = new double[particles.size()+walls.values().length][particles.size()+walls.values().length];
+        this.collisionTimes = new double[particles.size()+WALL_DIRECTION.values().length+2][particles.size()+WALL_DIRECTION.values().length+2];
         this.timeForFirstCollision = Double.POSITIVE_INFINITY;
         this.collitedObject1 = null;
         this.collitedObject2 = null;
+        this.grooveParticleBottom=new Particle(width/2,(height-grooveLength)/2,0,0,0,0,true);
+        this.grooveParticleTop=new Particle(width/2,height-(height-grooveLength)/2,0,0,0,0,true);
 
     }
 
@@ -60,16 +61,60 @@ public class Environment {
         return -1*(deltaVdeltaR + Math.sqrt(d))/(deltaVdeltaV);
 
     }
+    private double timeToWallCollision(Particle particle, Wall wall) {
+        double time,finalY;
+        switch (wall.getDirection()){
+            case UPPER:
+                if (particle.getVy()>0)
+                    return (height-particle.getRadius()-particle.getY())/particle.getVy();
+                return Double.POSITIVE_INFINITY;
+            case LOWER:
+                if (particle.getVy()<0)
+                    return (particle.getY()-particle.getRadius())/particle.getVy();
+                return Double.POSITIVE_INFINITY;
+            case RIGHT:
+                if (particle.getVx()>0)
+                    return (width-particle.getRadius()-particle.getX())/particle.getVx();
+                return Double.POSITIVE_INFINITY;
+            case LEFT:
+                if (particle.getVx()<0)
+                    return (particle.getX()-particle.getRadius())/particle.getVx();
+                return Double.POSITIVE_INFINITY;
+            case UPPER_GROOVE:
+                if (particle.getX()>width/2&&particle.getVx()>0)
+                    return Double.POSITIVE_INFINITY;
+                if (particle.getX()<width/2&&particle.getVx()<0)
+                    return Double.POSITIVE_INFINITY;
+                time=(width/2 - particle.getX())/particle.getVx();
+                finalY=particle.getY()+particle.getVy()*time;
+                if (finalY<height&&finalY>height-(height-grooveLength)/2)
+                    return time;
+                return Double.POSITIVE_INFINITY;
+            case LOWER_GROOVE:
+                if (particle.getX()>width/2&&particle.getVx()>0)
+                    return Double.POSITIVE_INFINITY;
+                if (particle.getX()<width/2&&particle.getVx()<0)
+                    return Double.POSITIVE_INFINITY;
+                time=(width/2 - particle.getX())/particle.getVx();
+                finalY=particle.getY()+particle.getVy()*time;
+                if (finalY>0&&finalY<(height-grooveLength)/2)
+                    return time;
+                return Double.POSITIVE_INFINITY;
+            default:
+                throw new RuntimeException("invalid direction");
+        }
+    }
 
-    public double recalculateCollisions(List<Particle> particlesToRecalculate) {
+
+
+    public void recalculateCollisions(List<Particle> particlesToRecalculate) {
         try {
-            //TODO considerar las 6 paredes
-            //TODO onsiderarlas partiuclas de radio 0 del groove
             int idxAux;
             double time;
             Particle particle1, particle2;
             for (int i = 0; i < particlesToRecalculate.size(); i++) {
-                for (int j = 0; j < this.collisionTimes.length - walls.values().length; j++) {
+                //choques entre particulas
+                for (int j = 0; j < this.collisionTimes.length - WALL_DIRECTION.values().length-2; j++) {
                     if(!particlesToRecalculate.get(i).equals(this.particles.get(j))) {
                         particle1 = particlesToRecalculate.get(i);
                         idxAux = this.particles.indexOf(particle1);
@@ -77,25 +122,54 @@ public class Environment {
                         time = this.timeToParticlesCollision(particle1, particle2);
                         this.collisionTimes[idxAux][j] = time;
                         this.collisionTimes[j][idxAux] = time;
-                        if (time < timeForFirstCollision) //TODO mal, hay que recorrer toda la matriz
-                            this.updateTimeForFirstCollision(time, new CollitedObject(particle1), new CollitedObject(particle2)); //For particle-particle collision
+
                     }
                 }
+                //considerar las particulas de radio 0 del groove
+                particle1 = particlesToRecalculate.get(i);
+                idxAux = this.particles.indexOf(particle1);
+                time = this.timeToParticlesCollision(particle1, grooveParticleBottom);
+                this.collisionTimes[idxAux][WALL_DIRECTION.values().length+1] = time;
+                this.collisionTimes[WALL_DIRECTION.values().length+1][idxAux] = time;
+                time = this.timeToParticlesCollision(particle1, grooveParticleTop);
+                this.collisionTimes[idxAux][WALL_DIRECTION.values().length+2] = time;
+                this.collisionTimes[WALL_DIRECTION.values().length+2][idxAux] = time;
+
+                //choques con las paredes
+                for (int j = 0; j < WALL_DIRECTION.values().length; j++) {
+                    particle1 = particlesToRecalculate.get(i);
+                    idxAux = this.particles.indexOf(particle1);
+                    time = timeToWallCollision(particle1,new Wall(WALL_DIRECTION.values()[j]));
+                    this.collisionTimes[idxAux][j] = time;
+                    this.collisionTimes[j][idxAux] = time;
+                }
+
             }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-        return this.timeForFirstCollision;
+    }
+
+    public double timeToNextCollision(){
+        double min=Double.POSITIVE_INFINITY;
+        for (int i = 0; i < collisionTimes.length; i++) {
+            for (int j = i+1; j < collisionTimes.length; j++) {
+                if (collisionTimes[i][j]<min)
+                    min=collisionTimes[i][j];
+            }
+        }
+        this.timeForFirstCollision=min;
+        return min;
     }
 
 
-    public void evolve() {
+    public void evolve(double tc) {
         //Calculamos nuevas posiciones de acuerdo a ecuaciones de MRU hasta tc
         Particle particle;
         for(int i = 0; i < this.particles.size(); i++) {
             particle = this.particles.get(i);
-            particle.setX(particle.getX() + particle.getVx()*this.timeForFirstCollision);
-            particle.setY(particle.getY() + particle.getVy()*this.timeForFirstCollision);
+            particle.setX(particle.getX() + particle.getVx()*tc);
+            particle.setY(particle.getY() + particle.getVy()*tc);
             this.particles.set(i, particle);
         }
     }
@@ -105,15 +179,26 @@ public class Environment {
             Particle particle1 = (Particle) collitedObject1.getObject();
             Particle particle2 = (Particle) collitedObject2.getObject();
             if(particle2.isFixed()) {
-                //TODO particle-grooveparticle
+                CollisionOperators.particleToFixedParticle(this.particles, particle1, particle2);
             } else if(particle1.isFixed()) {
-                //TODO particle-grooveparticle
+                CollisionOperators.particleToFixedParticle(this.particles, particle2, particle1);
 
             } else {
                 CollisionOperators.particleToParticle(this.particles, particle1, particle2);
             }
+
         } else {
-            //TODO particle-wall
+            //Collisions with walls
+            Particle particle;
+            Wall wall;
+            if (collitedObject1.getObjectType()==Wall.class){
+                wall=(Wall) collitedObject1.getObject();
+                particle= (Particle) collitedObject2.getObject();
+            }else {
+                wall=(Wall) collitedObject2.getObject();
+                particle= (Particle) collitedObject1.getObject();
+            }
+            CollisionOperators.particleToWall(this.particles,particle,wall);
         }
 
     }

@@ -19,4 +19,26 @@ public class CollisionOperators {
         particles.set(idx2, particle2);
 
     }
+
+    public static void particleToFixedParticle(List<Particle> particles, Particle particle, Particle fixedParticle) {
+    //TODO implementar esto
+
+    }
+    public static void particleToWall(List<Particle> particles, Particle particle, Wall wall) {
+        int idx1 = particles.indexOf(particle);
+        switch (wall.getDirection()){
+            case LEFT:
+            case RIGHT:
+                particle.setVx(-particle.getVx());
+                break;
+            case LOWER:
+            case UPPER:
+                particle.setVy(-particle.getVy());
+                break;
+            case LOWER_GROOVE:
+            case UPPER_GROOVE:
+                particle.setVx(-particle.getVx());
+                break;
+        }
+    }
 }

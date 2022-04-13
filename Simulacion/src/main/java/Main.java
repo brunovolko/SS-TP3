@@ -16,11 +16,14 @@ public class Main {
 
 
             saveState(pw, 0, environment.getState());
-            double tc;
+            double tc=0;
+            double totalTimePassed=0;
             while(!environment.stopCriteria()) {
-                tc = environment.recalculateCollisions(environment.getParticlesToRecalculate());
-                environment.evolve();
-                saveState(pw, tc, environment.getState());
+                environment.recalculateCollisions(environment.getParticlesToRecalculate());
+                tc = environment.timeToNextCollision();
+                environment.evolve(tc);
+                totalTimePassed+=tc;
+                saveState(pw, totalTimePassed, environment.getState());
                 environment.calculateNewVelocities();
             }
 
