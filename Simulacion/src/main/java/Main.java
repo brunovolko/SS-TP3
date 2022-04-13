@@ -33,7 +33,8 @@ public class Main {
 
     private static void saveState(PrintWriter pw, double tc, List<Particle> particles) {
         pw.println("t"+t + " " + tc);
-        System.out.println(particles);
+        for(Particle particle : particles)
+            pw.println(particle.getX() + " " + particle.getY() + " " + particle.getVx() + " " + particle.getVy());
         t++;
     }
 }
