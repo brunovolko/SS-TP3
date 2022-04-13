@@ -9,7 +9,7 @@ public class Main {
             Config config = new Config("static_input.txt", "dynamic_input.txt");
             Environment environment = new Environment(config.getParticles(), config.getWidthLength(), config.getHeightLength(), config.getGrooveLength());
             saveState(environment.getState());
-            environment.setupEvolution();
+            environment.recalculateCollisions(environment.getState()); //With all the particles, 1st time
             while(!environment.stopCriteria()) {
                 environment.evolve();
                 saveState(environment.getState());

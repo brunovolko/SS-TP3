@@ -7,6 +7,8 @@ public class Environment {
     private List<Particle> particles;
     private double width, height, grooveLength;
     private double[][] collisionTimes;
+    private double timeForFirstCollision;
+    Particle collitedParticle1, collitedParticle2;
 
     private enum walls {UPPER, LOWER, LEFT, RIGHT, UPPER_GROOVE, LOWER_GROOVE};
 
@@ -16,11 +18,17 @@ public class Environment {
         this.height = height;
         this.grooveLength = grooveLength;
         this.collisionTimes = new double[particles.size()+walls.values().length][particles.size()+walls.values().length];
-
+        this.timeForFirstCollision = Double.POSITIVE_INFINITY;
     }
 
     public List<Particle> getState() {
         return this.particles;
+    }
+
+    private void updateTimeForFirstCollision(double time, Particle particle1, Particle particle2) {
+        this.timeForFirstCollision = time;
+        this.collitedParticle1 = particle1;
+        this.collitedParticle2 = particle2;
     }
 
     private double timeToParticlesCollision(Particle particle1, Particle particle2) {
@@ -38,25 +46,36 @@ public class Environment {
 
     }
 
-    public void setupEvolution() {
-
+    public void recalculateCollisions(List<Particle> particlesToRecalculate) {
+        //TODO considerar las 6 paredes y las partiuclas de radio 0 del groove
+        int idxAux; double time;
         Particle particle1, particle2;
-
-        for(int i = 0; i < this.collisionTimes.length - walls.values().length; i++) {
-            for (int j = i+1; j < this.collisionTimes[0].length - walls.values().length; j++) {
-                if(i != j) {
-                    particle1 = this.particles.get(i);
-                    particle2 = this.particles.get(j);
-                    this.collisionTimes[i][j] = this.timeToParticlesCollision(particle1, particle2);
-                    this.collisionTimes[j][i] = this.timeToParticlesCollision(particle1, particle2);
-                }
+        for(int i = 0; i < particlesToRecalculate.size(); i++) {
+            for (int j = i+1; j < this.collisionTimes.length - walls.values().length; j++) {
+                particle1 = particlesToRecalculate.get(i);
+                idxAux = this.particles.indexOf(particle1);
+                particle2 = this.particles.get(j);
+                time = this.timeToParticlesCollision(particle1, particle2);
+                this.collisionTimes[idxAux][j] = time;
+                this.collisionTimes[j][idxAux] = time;
+                if(time < timeForFirstCollision)
+                    this.updateTimeForFirstCollision(time, particle1, particle2); //For particle-particle collision
             }
         }
     }
 
 
     public void evolve() {
+        //Calculamos nuevas posiciones de acuerdo a ecuaciones de MRU hasta tc
+        Particle particle;
+        for(int i = 0; i < this.particles.size(); i++) {
+            particle = this.particles.get(i);
+            particle.setX(particle.getX() + particle.getVx()*this.timeForFirstCollision);
+            particle.setY(particle.getY() + particle.getVy()*this.timeForFirstCollision);
+            this.particles.set(i, particle);
+        }
     }
+
 
     private boolean aux = false;
     public boolean stopCriteria() {
@@ -68,4 +87,6 @@ public class Environment {
             return false;
         }
     }
+
+
 }
