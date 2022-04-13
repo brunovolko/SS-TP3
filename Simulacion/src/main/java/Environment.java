@@ -43,11 +43,12 @@ public class Environment {
         Particle particle1, particle2;
 
         for(int i = 0; i < this.collisionTimes.length - walls.values().length; i++) {
-            for (int j = 0; j < this.collisionTimes[0].length - walls.values().length; j++) {
+            for (int j = i+1; j < this.collisionTimes[0].length - walls.values().length; j++) {
                 if(i != j) {
                     particle1 = this.particles.get(i);
                     particle2 = this.particles.get(j);
                     this.collisionTimes[i][j] = this.timeToParticlesCollision(particle1, particle2);
+                    this.collisionTimes[j][i] = this.timeToParticlesCollision(particle1, particle2);
                 }
             }
         }
