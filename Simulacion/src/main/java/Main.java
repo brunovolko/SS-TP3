@@ -16,7 +16,7 @@ public class Main {
 
 
             saveState(pw, 0, environment.getState());
-            double tc=0;
+            double tc;
             double totalTimePassed=0;
             while(!environment.stopCriteria()) {
                 environment.recalculateCollisions(environment.getParticlesToRecalculate());
@@ -30,6 +30,7 @@ public class Main {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (Exception ex) {
+            ex.printStackTrace();
             System.out.println(ex.getMessage());
         }
     }

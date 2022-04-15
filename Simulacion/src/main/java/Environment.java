@@ -28,6 +28,9 @@ public class Environment {
         this.grooveParticleBottom=new Particle(width/2,(height-grooveLength)/2,0,0,0,0,true);
         this.grooveParticleTop=new Particle(width/2,height-(height-grooveLength)/2,0,0,0,0,true);
 
+        for(int i = this.particles.size(); i < this.collisionTimes.length; i++)
+            for(int j = this.particles.size(); j < this.collisionTimes.length; j++)
+                this.collisionTimes[i][j] = Double.POSITIVE_INFINITY;
     }
 
     public List<Particle> getState() {
@@ -35,10 +38,21 @@ public class Environment {
     }
 
     public List<Particle> getParticlesToRecalculate() {
-        if(this.collitedObject1 == null && this.collitedObject2 == null)
-            return this.getState();  //With all the particles, 1st time
+        List<Particle> particlesToRecalculate = new ArrayList<>();
+        if(this.collitedObject1 != null && this.collitedObject1.getObjectType().equals(Particle.class)) {
+            Particle auxPart1 = (Particle) this.collitedObject1.getObject();
+            if (!auxPart1.isFixed())
+                particlesToRecalculate.add(auxPart1);
+        }
+        if(this.collitedObject2 != null && this.collitedObject2.getObjectType().equals(Particle.class)) {
+            Particle auxPart2 = (Particle) this.collitedObject2.getObject();
+            if (!auxPart2.isFixed())
+                particlesToRecalculate.add(auxPart2);
+        }
+        if(particlesToRecalculate.size() == 0)
+            return this.getState();
         else
-            return Arrays.stream(new Object[]{collitedObject1.getObject(), collitedObject2.getObject()}).map(o -> (Particle)o).collect(Collectors.toList());
+            return particlesToRecalculate;
     }
 
     private void updateTimeForFirstCollision(double time, CollitedObject collitedObject1, CollitedObject collitedObject2) throws Exception {
@@ -70,7 +84,7 @@ public class Environment {
                 return Double.POSITIVE_INFINITY;
             case LOWER:
                 if (particle.getVy()<0)
-                    return (particle.getY()-particle.getRadius())/particle.getVy();
+                    return (particle.getY()-particle.getRadius())/Math.abs(particle.getVy());
                 return Double.POSITIVE_INFINITY;
             case RIGHT:
                 if (particle.getVx()>0)
@@ -78,14 +92,14 @@ public class Environment {
                 return Double.POSITIVE_INFINITY;
             case LEFT:
                 if (particle.getVx()<0)
-                    return (particle.getX()-particle.getRadius())/particle.getVx();
+                    return (particle.getX()-particle.getRadius())/Math.abs(particle.getVx());
                 return Double.POSITIVE_INFINITY;
             case UPPER_GROOVE:
                 if (particle.getX()>width/2&&particle.getVx()>0)
                     return Double.POSITIVE_INFINITY;
                 if (particle.getX()<width/2&&particle.getVx()<0)
                     return Double.POSITIVE_INFINITY;
-                time=(width/2 - particle.getX())/particle.getVx();
+                time=(width/2 - particle.getX())/Math.abs(particle.getVx());
                 finalY=particle.getY()+particle.getVy()*time;
                 if (finalY<height&&finalY>height-(height-grooveLength)/2)
                     return time;
@@ -95,7 +109,7 @@ public class Environment {
                     return Double.POSITIVE_INFINITY;
                 if (particle.getX()<width/2&&particle.getVx()<0)
                     return Double.POSITIVE_INFINITY;
-                time=(width/2 - particle.getX())/particle.getVx();
+                time=(width/2 - particle.getX())/Math.abs(particle.getVx());
                 finalY=particle.getY()+particle.getVy()*time;
                 if (finalY>0&&finalY<(height-grooveLength)/2)
                     return time;
@@ -129,19 +143,17 @@ public class Environment {
                 particle1 = particlesToRecalculate.get(i);
                 idxAux = this.particles.indexOf(particle1);
                 time = this.timeToParticlesCollision(particle1, grooveParticleBottom);
-                this.collisionTimes[idxAux][WALL_DIRECTION.values().length+1] = time;
-                this.collisionTimes[WALL_DIRECTION.values().length+1][idxAux] = time;
+                this.collisionTimes[idxAux][this.particles.size() + WALL_DIRECTION.values().length] = time;
+                this.collisionTimes[this.particles.size() + WALL_DIRECTION.values().length][idxAux] = time;
                 time = this.timeToParticlesCollision(particle1, grooveParticleTop);
-                this.collisionTimes[idxAux][WALL_DIRECTION.values().length+2] = time;
-                this.collisionTimes[WALL_DIRECTION.values().length+2][idxAux] = time;
+                this.collisionTimes[idxAux][this.particles.size() + WALL_DIRECTION.values().length+1] = time;
+                this.collisionTimes[this.particles.size() + WALL_DIRECTION.values().length+1][idxAux] = time;
 
                 //choques con las paredes
                 for (int j = 0; j < WALL_DIRECTION.values().length; j++) {
-                    particle1 = particlesToRecalculate.get(i);
-                    idxAux = this.particles.indexOf(particle1);
                     time = timeToWallCollision(particle1,new Wall(WALL_DIRECTION.values()[j]));
-                    this.collisionTimes[idxAux][j] = time;
-                    this.collisionTimes[j][idxAux] = time;
+                    this.collisionTimes[idxAux][this.particles.size() + j] = time;
+                    this.collisionTimes[this.particles.size() + j][idxAux] = time;
                 }
 
             }
@@ -150,15 +162,38 @@ public class Environment {
         }
     }
 
-    public double timeToNextCollision(){
+    public double timeToNextCollision() throws Exception{
         double min=Double.POSITIVE_INFINITY;
+        int imin = 0, jmin = 0;
         for (int i = 0; i < collisionTimes.length; i++) {
             for (int j = i+1; j < collisionTimes.length; j++) {
-                if (collisionTimes[i][j]<min)
-                    min=collisionTimes[i][j];
+                if (collisionTimes[i][j]<min) {
+                    min = collisionTimes[i][j];
+                    imin = i;
+                    jmin = j;
+                }
             }
         }
-        this.timeForFirstCollision=min;
+        CollitedObject collitedObject1, collitedObject2;
+        if(imin < this.particles.size())
+            collitedObject1 = new CollitedObject(this.particles.get(imin));
+        else if(imin - this.particles.size() < WALL_DIRECTION.values().length)
+            collitedObject1 = new CollitedObject(new Wall(WALL_DIRECTION.values()[imin-this.particles.size()]));
+        else if(imin == this.collisionTimes.length-2)
+            collitedObject1 = new CollitedObject(grooveParticleBottom);
+        else
+            collitedObject1 = new CollitedObject(grooveParticleTop);
+
+        if(jmin < this.particles.size())
+            collitedObject2 = new CollitedObject(this.particles.get(jmin));
+        else if(jmin - this.particles.size() < WALL_DIRECTION.values().length)
+            collitedObject2 = new CollitedObject(new Wall(WALL_DIRECTION.values()[jmin-this.particles.size()]));
+        else if(jmin == this.collisionTimes.length-2)
+            collitedObject2 = new CollitedObject(grooveParticleBottom);
+        else
+            collitedObject2 = new CollitedObject(grooveParticleTop);
+
+        this.updateTimeForFirstCollision(min, collitedObject1, collitedObject2);
         return min;
     }
 
