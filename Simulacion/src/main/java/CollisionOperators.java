@@ -21,7 +21,22 @@ public class CollisionOperators {
     }
 
     public static void particleToFixedParticle(List<Particle> particles, Particle particle, Particle fixedParticle) {
-    //TODO implementar esto
+        int idx1 = particles.indexOf(particle);
+
+        double d = Math.sqrt(Math.pow(particle.getX() - fixedParticle.getX(), 2) + Math.pow(particle.getY() - fixedParticle.getY(), 2));
+        double cosAlpha = (particle.getX()-fixedParticle.getX())/ d;
+        double sinAlpha = (particle.getY()-fixedParticle.getY())/ d;
+
+        double nextVx = particle.getVx()*(-1*Math.pow(cosAlpha,2)+1*Math.pow(sinAlpha,2)) +
+                particle.getVy()*(-2*sinAlpha*cosAlpha);
+        double nextVy = particle.getVx()*(-2*sinAlpha*cosAlpha) +
+                particle.getVy()*(-1*Math.pow(sinAlpha,2)+1*Math.pow(cosAlpha,2));
+
+        particle.setVx(nextVx);
+        particle.setVy(nextVy);
+
+        particles.set(idx1,particle);
+
 
     }
     public static void particleToWall(List<Particle> particles, Particle particle, Wall wall) {
