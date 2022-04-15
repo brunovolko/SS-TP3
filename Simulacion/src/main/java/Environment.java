@@ -72,6 +72,9 @@ public class Environment {
         d = Math.pow(deltaVdeltaR,2) - deltaVdeltaV*(deltaRdeltaR-sigma*sigma);
         if (d < 0)
             return Double.POSITIVE_INFINITY;
+        double ret = -1*(deltaVdeltaR + Math.sqrt(d))/(deltaVdeltaV);
+    //    if (ret<=0.0)
+     //       return Double.POSITIVE_INFINITY;
         return -1*(deltaVdeltaR + Math.sqrt(d))/(deltaVdeltaV);
 
     }
@@ -194,6 +197,8 @@ public class Environment {
             collitedObject2 = new CollitedObject(grooveParticleTop);
 
         this.updateTimeForFirstCollision(min, collitedObject1, collitedObject2);
+        if(min<=0.0)
+            System.out.println("tiempo min dio "+ min);
         return min;
     }
 
@@ -241,8 +246,24 @@ public class Environment {
 
     private int counter = 0;
     public boolean stopCriteria() {
-        return counter++ == 5;
-    }
+        return counter++==10;
+        /*
+        int totalParticles = particles.size();
+        double limit = width / 2 - particles.get(0).getRadius();
 
+        int leftSideParticlesCounter = 0;
+
+
+        for(Particle particle : particles) {
+            if(particle.getX()<limit)
+                leftSideParticlesCounter++;
+        }
+
+         System.out.println(leftSideParticlesCounter);
+        return ((double)leftSideParticlesCounter / totalParticles) >= 0.495
+                && ((double)leftSideParticlesCounter / totalParticles) <= 0.505;
+
+         */
+    }
 
 }
