@@ -39,8 +39,8 @@ public class CollisionOperators {
 
 
     }
-    public static void particleToWall(List<Particle> particles, Particle particle, Wall wall) {
-        int idx1 = particles.indexOf(particle);
+    public static void particleToWall(List<Particle> particles,Particle particle, Wall wall) {
+        int index = particles.indexOf(particle);
         switch (wall.getDirection()){
             case LEFT:
             case RIGHT:
@@ -55,5 +55,6 @@ public class CollisionOperators {
                 particle.setVx(-particle.getVx());
                 break;
         }
+        particles.set(index, particle);
     }
 }

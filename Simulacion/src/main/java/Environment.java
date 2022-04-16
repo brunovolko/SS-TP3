@@ -83,26 +83,26 @@ public class Environment {
         switch (wall.getDirection()){
             case UPPER:
                 if (particle.getVy()>0)
-                    return (height-particle.getRadius()-particle.getY())/particle.getVy();
+                    return Math.abs((height-particle.getRadius()-particle.getY())/particle.getVy());
                 return Double.POSITIVE_INFINITY;
             case LOWER:
                 if (particle.getVy()<0)
-                    return (particle.getY()-particle.getRadius())/Math.abs(particle.getVy());
+                    return Math.abs((particle.getY()-particle.getRadius())/particle.getVy());
                 return Double.POSITIVE_INFINITY;
             case RIGHT:
                 if (particle.getVx()>0)
-                    return (width-particle.getRadius()-particle.getX())/particle.getVx();
+                    return Math.abs((width-particle.getRadius()-particle.getX())/particle.getVx());
                 return Double.POSITIVE_INFINITY;
             case LEFT:
                 if (particle.getVx()<0)
-                    return (particle.getX()-particle.getRadius())/Math.abs(particle.getVx());
+                    return Math.abs((particle.getX()-particle.getRadius())/particle.getVx());
                 return Double.POSITIVE_INFINITY;
             case UPPER_GROOVE:
                 if (particle.getX()>width/2&&particle.getVx()>0)
                     return Double.POSITIVE_INFINITY;
                 if (particle.getX()<width/2&&particle.getVx()<0)
                     return Double.POSITIVE_INFINITY;
-                time=(width/2 - particle.getX())/Math.abs(particle.getVx());
+                time=Math.abs((width/2 - particle.getX())/particle.getVx());
                 finalY=particle.getY()+particle.getVy()*time;
                 if (finalY<height&&finalY>height-(height-grooveLength)/2)
                     return time;
@@ -112,7 +112,7 @@ public class Environment {
                     return Double.POSITIVE_INFINITY;
                 if (particle.getX()<width/2&&particle.getVx()<0)
                     return Double.POSITIVE_INFINITY;
-                time=(width/2 - particle.getX())/Math.abs(particle.getVx());
+                time=Math.abs((width/2 - particle.getX())/particle.getVx());
                 finalY=particle.getY()+particle.getVy()*time;
                 if (finalY>0&&finalY<(height-grooveLength)/2)
                     return time;
