@@ -270,11 +270,7 @@ public class Environment {
 
     }
 
-
-    private int counter = 0;
-    public boolean stopCriteria() {
-
-        int totalParticles = particles.size();
+    public int getCantParticlesLeftSide() {
         double limit = width / 2 - particles.get(0).getRadius();
 
         int leftSideParticlesCounter = 0;
@@ -284,6 +280,18 @@ public class Environment {
             if(particle.getX()<limit)
                 leftSideParticlesCounter++;
         }
+        return leftSideParticlesCounter;
+    }
+
+
+    private int counter = 0;
+    public boolean stopCriteria() {
+        //TODO ver si parametrizar el porcentaje o ver que opina german
+
+        int totalParticles = particles.size();
+
+        int leftSideParticlesCounter = this.getCantParticlesLeftSide();
+
 
 //        System.out.println(leftSideParticlesCounter);
         return ((double)leftSideParticlesCounter / totalParticles) >= 0.495
