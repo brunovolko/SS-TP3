@@ -285,7 +285,7 @@ public class Environment {
                 leftSideParticlesCounter++;
         }
 
-        System.out.println(leftSideParticlesCounter);
+//        System.out.println(leftSideParticlesCounter);
         return ((double)leftSideParticlesCounter / totalParticles) >= 0.495
                 && ((double)leftSideParticlesCounter / totalParticles) <= 0.55;
 

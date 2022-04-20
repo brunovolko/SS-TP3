@@ -33,6 +33,43 @@ public class Main {
             ex.printStackTrace();
             System.out.println(ex.getMessage());
         }
+//        timetoEqualization(args);
+    }
+
+    public static void timetoEqualization(String[] args) {
+        File results= new File("results.txt");
+        try(PrintWriter pw = new PrintWriter(results)) {
+            for (int i = 0; i < 10; i++) {
+                ParticlesGenerator.main(args);
+                Config config = new Config("static_input.txt", "dynamic_input.txt");
+                if (i==0){
+                    pw.println("Number of particles "+config.getNumberParticles());
+                    pw.println("Groove size "+config.getGrooveLength());
+                }
+                Environment environment = new Environment(config.getParticles(), config.getWidthLength(), config.getHeightLength(), config.getGrooveLength());
+                double tc;
+                double totalTimePassed=0;
+                while(!environment.stopCriteria()) {
+                    environment.recalculateCollisions(environment.getParticlesToRecalculate());
+                    tc = environment.timeToNextCollision();
+                    environment.evolve(tc);
+                    totalTimePassed+=tc;
+                    environment.calculateNewVelocities();
+                }
+                pw.println(totalTimePassed);
+                System.out.println("Round "+i+" complete");
+
+            }
+
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+        }
+
     }
 
     private static void saveState(PrintWriter pw, double tc, List<Particle> particles) {
