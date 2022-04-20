@@ -72,9 +72,7 @@ public class Environment {
         d = Math.pow(deltaVdeltaR,2) - deltaVdeltaV*(deltaRdeltaR-sigma*sigma);
         if (d < 0)
             return Double.POSITIVE_INFINITY;
-        double ret = -1*(deltaVdeltaR + Math.sqrt(d))/(deltaVdeltaV);
-    //    if (ret<=0.0)
-     //       return Double.POSITIVE_INFINITY;
+
         return -1*(deltaVdeltaR + Math.sqrt(d))/(deltaVdeltaV);
 
     }
@@ -83,7 +81,7 @@ public class Environment {
         switch (wall.getDirection()){
             case UPPER:
                 if (particle.getVy()>0)
-                    return Math.abs((height-particle.getRadius()-particle.getY())/particle.getVy());
+                    return (height-particle.getRadius()-particle.getY())/particle.getVy();
                 return Double.POSITIVE_INFINITY;
             case LOWER:
                 if (particle.getVy()<0)
@@ -91,16 +89,16 @@ public class Environment {
                 return Double.POSITIVE_INFINITY;
             case RIGHT:
                 if (particle.getVx()>0)
-                    return Math.abs((width-particle.getRadius()-particle.getX())/particle.getVx());
+                    return (width-particle.getRadius()-particle.getX())/particle.getVx();
                 return Double.POSITIVE_INFINITY;
             case LEFT:
                 if (particle.getVx()<0)
                     return Math.abs((particle.getX()-particle.getRadius())/particle.getVx());
                 return Double.POSITIVE_INFINITY;
             case UPPER_GROOVE:
-                if (particle.getX()>width/2&&particle.getVx()>0)
+                if (particle.getX()>=width/2&&particle.getVx()>0)
                     return Double.POSITIVE_INFINITY;
-                if (particle.getX()<width/2&&particle.getVx()<0)
+                if (particle.getX()<=width/2&&particle.getVx()<0)
                     return Double.POSITIVE_INFINITY;
                 time=Math.abs((width/2 - particle.getX())/particle.getVx());
                 finalY=particle.getY()+particle.getVy()*time;
@@ -108,9 +106,9 @@ public class Environment {
                     return time;
                 return Double.POSITIVE_INFINITY;
             case LOWER_GROOVE:
-                if (particle.getX()>width/2&&particle.getVx()>0)
+                if (particle.getX()>=width/2&&particle.getVx()>0)
                     return Double.POSITIVE_INFINITY;
-                if (particle.getX()<width/2&&particle.getVx()<0)
+                if (particle.getX()<=width/2&&particle.getVx()<0)
                     return Double.POSITIVE_INFINITY;
                 time=Math.abs((width/2 - particle.getX())/particle.getVx());
                 finalY=particle.getY()+particle.getVy()*time;
@@ -123,8 +121,10 @@ public class Environment {
     }
 
 
+    int a =0;
 
     public void recalculateCollisions(List<Particle> particlesToRecalculate) {
+        a++;
         try {
             int idxAux;
             double time;
@@ -137,6 +137,8 @@ public class Environment {
                         idxAux = this.particles.indexOf(particle1);
                         particle2 = this.particles.get(j);
                         time = this.timeToParticlesCollision(particle1, particle2);
+                        if(time<=0.0)
+                            System.out.println("t negativo");
                         this.collisionTimes[idxAux][j] = time;
                         this.collisionTimes[j][idxAux] = time;
 
@@ -146,15 +148,21 @@ public class Environment {
                 particle1 = particlesToRecalculate.get(i);
                 idxAux = this.particles.indexOf(particle1);
                 time = this.timeToParticlesCollision(particle1, grooveParticleBottom);
+                if(time<=0.0)
+                    System.out.println("t negativo");
                 this.collisionTimes[idxAux][this.particles.size() + WALL_DIRECTION.values().length] = time;
                 this.collisionTimes[this.particles.size() + WALL_DIRECTION.values().length][idxAux] = time;
                 time = this.timeToParticlesCollision(particle1, grooveParticleTop);
+                if(time<=0.0)
+                    System.out.println("t negativo");
                 this.collisionTimes[idxAux][this.particles.size() + WALL_DIRECTION.values().length+1] = time;
                 this.collisionTimes[this.particles.size() + WALL_DIRECTION.values().length+1][idxAux] = time;
 
                 //choques con las paredes
                 for (int j = 0; j < WALL_DIRECTION.values().length; j++) {
                     time = timeToWallCollision(particle1,new Wall(WALL_DIRECTION.values()[j]));
+                    if(time<=0.0)
+                        System.out.println("t negativo");
                     this.collisionTimes[idxAux][this.particles.size() + j] = time;
                     this.collisionTimes[this.particles.size() + j][idxAux] = time;
                 }
@@ -169,8 +177,8 @@ public class Environment {
         double min=Double.POSITIVE_INFINITY;
         int imin = 0, jmin = 0;
         for (int i = 0; i < collisionTimes.length; i++) {
-            for (int j = i+1; j < collisionTimes.length; j++) {
-                if (collisionTimes[i][j]<min) {
+            for (int j = 0; j < collisionTimes.length; j++) {
+                if (collisionTimes[i][j]>0.0 && collisionTimes[i][j]<min) {
                     min = collisionTimes[i][j];
                     imin = i;
                     jmin = j;
@@ -180,8 +188,9 @@ public class Environment {
         CollitedObject collitedObject1, collitedObject2;
         if(imin < this.particles.size())
             collitedObject1 = new CollitedObject(this.particles.get(imin));
-        else if(imin - this.particles.size() < WALL_DIRECTION.values().length)
-            collitedObject1 = new CollitedObject(new Wall(WALL_DIRECTION.values()[imin-this.particles.size()]));
+        else if(imin - this.particles.size() < WALL_DIRECTION.values().length) {
+            collitedObject1 = new CollitedObject(new Wall(WALL_DIRECTION.values()[imin - this.particles.size()]));
+        }
         else if(imin == this.collisionTimes.length-2)
             collitedObject1 = new CollitedObject(grooveParticleBottom);
         else
@@ -204,13 +213,31 @@ public class Environment {
 
 
     public void evolve(double tc) {
+
         //Calculamos nuevas posiciones de acuerdo a ecuaciones de MRU hasta tc
         Particle particle;
         for(int i = 0; i < this.particles.size(); i++) {
             particle = this.particles.get(i);
             particle.setX(particle.getX() + particle.getVx()*tc);
             particle.setY(particle.getY() + particle.getVy()*tc);
+            if(Math.abs(particle.getX()-particle.getRadius())<0.0000000000001)
+                particle.setX(particle.getRadius());
+            if(Math.abs(particle.getY()-particle.getRadius())<0.0000000000001)
+                particle.setY(particle.getRadius());
+            if(Math.abs(particle.getX()-width/2)<0.0000000000001)
+                particle.setX(width/2);
+            if(particle.getX()<0.0015)
+                System.out.println("particula "+i +" dio con x neg " + particle.getX());
+            if(particle.getY()<0.0015)
+                System.out.println("particula "+i +" dio con y neg " + particle.getY());
             this.particles.set(i, particle);
+        }
+        for(int i =0;i<collisionTimes.length;i++){
+            for(int j=0;j<collisionTimes.length;j++){
+                if(collisionTimes[i][j]==0.0)
+                    continue;
+                collisionTimes[i][j]-=timeForFirstCollision;
+            }
         }
     }
 
@@ -246,8 +273,7 @@ public class Environment {
 
     private int counter = 0;
     public boolean stopCriteria() {
-        return counter++==10;
-        /*
+
         int totalParticles = particles.size();
         double limit = width / 2 - particles.get(0).getRadius();
 
@@ -259,11 +285,10 @@ public class Environment {
                 leftSideParticlesCounter++;
         }
 
-         System.out.println(leftSideParticlesCounter);
+        System.out.println(leftSideParticlesCounter);
         return ((double)leftSideParticlesCounter / totalParticles) >= 0.495
-                && ((double)leftSideParticlesCounter / totalParticles) <= 0.505;
+                && ((double)leftSideParticlesCounter / totalParticles) <= 0.55;
 
-         */
+
     }
-
 }
