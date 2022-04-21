@@ -95,7 +95,7 @@ public class Environment {
                 if (particle.getVx()<0)
                     return Math.abs((particle.getX()-particle.getRadius())/particle.getVx());
                 return Double.POSITIVE_INFINITY;
-            case UPPER_GROOVE:
+            case UPPER_GROOVE: //TODO falta considerar radios
                 if (particle.getX()>=width/2&&particle.getVx()>0)
                     return Double.POSITIVE_INFINITY;
                 if (particle.getX()<=width/2&&particle.getVx()<0)
@@ -105,7 +105,7 @@ public class Environment {
                 if (finalY<height&&finalY>height-(height-grooveLength)/2)
                     return time;
                 return Double.POSITIVE_INFINITY;
-            case LOWER_GROOVE:
+            case LOWER_GROOVE: //TODO falta considerar radios
                 if (particle.getX()>=width/2&&particle.getVx()>0)
                     return Double.POSITIVE_INFINITY;
                 if (particle.getX()<=width/2&&particle.getVx()<0)

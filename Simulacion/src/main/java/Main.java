@@ -74,7 +74,7 @@ public class Main {
 
     private static void saveState(PrintWriter pw, double tc, List<Particle> particles) {
         pw.println(particles.size());
-        pw.println("Lattice=\"0.24 0.0 0.0 0.0 0.09 0.0 0.0 0.0 0.0\" Origin=\"0.0 0.0 0.0\" Properties=pos:R:2:velo:R:2:radius:R:1:mass:R:1");
+        pw.println("");
         for(Particle particle : particles)
             pw.println(particle.getX() + " " + particle.getY() + " " + particle.getVx() + " " + particle.getVy()+" "+particle.getRadius()+" "+particle.getMass());
         t++;
