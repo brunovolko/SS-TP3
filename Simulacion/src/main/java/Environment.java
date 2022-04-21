@@ -28,8 +28,9 @@ public class Environment {
         this.grooveParticleBottom=new Particle(width/2,(height-grooveLength)/2,0,0,0,0,true);
         this.grooveParticleTop=new Particle(width/2,height-(height-grooveLength)/2,0,0,0,0,true);
 
-        for(int i = this.particles.size(); i < this.collisionTimes.length; i++)
-            for(int j = this.particles.size(); j < this.collisionTimes.length; j++)
+
+        for(int i = 0; i < this.collisionTimes.length; i++)
+            for(int j = 0; j < this.collisionTimes.length; j++)
                 this.collisionTimes[i][j] = Double.POSITIVE_INFINITY;
     }
 
@@ -95,25 +96,44 @@ public class Environment {
                 if (particle.getVx()<0)
                     return Math.abs((particle.getX()-particle.getRadius())/particle.getVx());
                 return Double.POSITIVE_INFINITY;
-            case UPPER_GROOVE: //TODO falta considerar radios
-                if (particle.getX()>=width/2&&particle.getVx()>0)
+            case UPPER_GROOVE:
+                if (particle.getX()>width/2&&particle.getVx()>0)
                     return Double.POSITIVE_INFINITY;
-                if (particle.getX()<=width/2&&particle.getVx()<0)
+                if (particle.getX()<width/2 && particle.getVx()<0)
                     return Double.POSITIVE_INFINITY;
-                time=Math.abs((width/2 - particle.getX())/particle.getVx());
+                //if(isInTheGroove(particle)) //TODO isInTheGroove no es correcto, revisar donde mas se usa
+                  //  return Double.POSITIVE_INFINITY;
+                if(particle.getX() < width/2)
+                    time=(width/2 - particle.getRadius() - particle.getX())/particle.getVx();
+                else if(particle.getX() > width/2)
+                    time=Math.abs((particle.getX() - width/2 - particle.getRadius())/particle.getVx());
+                else
+                    return Double.POSITIVE_INFINITY;
                 finalY=particle.getY()+particle.getVy()*time;
-                if (finalY<height&&finalY>height-(height-grooveLength)/2)
+                if (finalY<height&&finalY>height-(height-grooveLength)/2) {
+                    if(time < 0)
+                        System.out.println("ACA. x="+particle.getX()+";Y="+particle.getY()+";Vx="+particle.getVx()+";Vy="+particle.getVy()); //TODO sacar prints
                     return time;
+                }
+
                 return Double.POSITIVE_INFINITY;
-            case LOWER_GROOVE: //TODO falta considerar radios
-                if (particle.getX()>=width/2&&particle.getVx()>0)
+            case LOWER_GROOVE:
+                if (particle.getX()>width/2&&particle.getVx()>0)
                     return Double.POSITIVE_INFINITY;
-                if (particle.getX()<=width/2&&particle.getVx()<0)
+                if (particle.getX()<width/2&&particle.getVx()<0)
                     return Double.POSITIVE_INFINITY;
-                time=Math.abs((width/2 - particle.getX())/particle.getVx());
+                //if(isInTheGroove(particle))
+                  //  return Double.POSITIVE_INFINITY;
+                if(particle.getX() < width/2)
+                    time=(width/2 - particle.getRadius() - particle.getX())/particle.getVx();
+                else if(particle.getX() > width/2)
+                    time=Math.abs((particle.getX() - width/2 - particle.getRadius())/particle.getVx());
+                else
+                    return Double.POSITIVE_INFINITY;
                 finalY=particle.getY()+particle.getVy()*time;
                 if (finalY>0&&finalY<(height-grooveLength)/2)
                     return time;
+
                 return Double.POSITIVE_INFINITY;
             default:
                 throw new RuntimeException("invalid direction");
@@ -122,7 +142,7 @@ public class Environment {
 
 
     int a =0;
-
+    //TODO revisar colision con particulas fijas si le pasa de costado
     public void recalculateCollisions(List<Particle> particlesToRecalculate) {
         a++;
         try {
@@ -138,7 +158,7 @@ public class Environment {
                         particle2 = this.particles.get(j);
                         time = this.timeToParticlesCollision(particle1, particle2);
                         if(time<=0.0)
-                            System.out.println("t negativo");
+                            System.out.println("t negativo con particulas");
                         this.collisionTimes[idxAux][j] = time;
                         this.collisionTimes[j][idxAux] = time;
 
@@ -149,20 +169,25 @@ public class Environment {
                 idxAux = this.particles.indexOf(particle1);
                 time = this.timeToParticlesCollision(particle1, grooveParticleBottom);
                 if(time<=0.0)
-                    System.out.println("t negativo");
+                    System.out.println("t negativo con groove bottom");
                 this.collisionTimes[idxAux][this.particles.size() + WALL_DIRECTION.values().length] = time;
                 this.collisionTimes[this.particles.size() + WALL_DIRECTION.values().length][idxAux] = time;
                 time = this.timeToParticlesCollision(particle1, grooveParticleTop);
                 if(time<=0.0)
-                    System.out.println("t negativo");
+                    System.out.println("t negativo con groove top");
                 this.collisionTimes[idxAux][this.particles.size() + WALL_DIRECTION.values().length+1] = time;
                 this.collisionTimes[this.particles.size() + WALL_DIRECTION.values().length+1][idxAux] = time;
 
                 //choques con las paredes
                 for (int j = 0; j < WALL_DIRECTION.values().length; j++) {
+                    /*if(i == 48 && (j == 4 || j == 5))
+                        System.out.println("aa");*/
+
                     time = timeToWallCollision(particle1,new Wall(WALL_DIRECTION.values()[j]));
-                    if(time<=0.0)
-                        System.out.println("t negativo");
+                    if(time<0.0)
+                        System.out.println("t negativo con wall: " + time);
+                    else if(time==0.0)
+                        System.out.println("t cero");
                     this.collisionTimes[idxAux][this.particles.size() + j] = time;
                     this.collisionTimes[this.particles.size() + j][idxAux] = time;
                 }
@@ -178,7 +203,7 @@ public class Environment {
         int imin = 0, jmin = 0;
         for (int i = 0; i < collisionTimes.length; i++) {
             for (int j = 0; j < collisionTimes.length; j++) {
-                if (collisionTimes[i][j]>0.0 && collisionTimes[i][j]<min) {
+                if (collisionTimes[i][j]>=0.0 && collisionTimes[i][j]<min) {
                     min = collisionTimes[i][j];
                     imin = i;
                     jmin = j;
@@ -206,7 +231,7 @@ public class Environment {
             collitedObject2 = new CollitedObject(grooveParticleTop);
 
         this.updateTimeForFirstCollision(min, collitedObject1, collitedObject2);
-        if(min<=0.0)
+        if(min<0.0)
             System.out.println("tiempo min dio "+ min);
         return min;
     }
@@ -216,20 +241,58 @@ public class Environment {
 
         //Calculamos nuevas posiciones de acuerdo a ecuaciones de MRU hasta tc
         Particle particle;
+        double umbralError = 0.00001;
         for(int i = 0; i < this.particles.size(); i++) {
             particle = this.particles.get(i);
+            double finalY;
             particle.setX(particle.getX() + particle.getVx()*tc);
             particle.setY(particle.getY() + particle.getVy()*tc);
-            if(Math.abs(particle.getX()-particle.getRadius())<0.0000000000001)
-                particle.setX(particle.getRadius());
-            if(Math.abs(particle.getY()-particle.getRadius())<0.0000000000001)
-                particle.setY(particle.getRadius());
-            if(Math.abs(particle.getX()-width/2)<0.0000000000001)
-                particle.setX(width/2);
-            if(particle.getX()<0.0015)
-                System.out.println("particula "+i +" dio con x neg " + particle.getX());
-            if(particle.getY()<0.0015)
+            List<Particle> collitedParticles = this.getParticlesToRecalculate();
+
+            finalY=particle.getY()+particle.getVy()*tc;
+
+            if(collitedParticles.contains(particle)) {
+                if(Math.abs(particle.getX() - particle.getRadius()) < umbralError) //Pared izquierda
+                    particle.setX(particle.getRadius());
+                if(Math.abs(particle.getX() - width + particle.getRadius()) < umbralError) //Pared derecha
+                    particle.setX(width-particle.getRadius());
+                if(Math.abs(particle.getY() - particle.getRadius()) < umbralError) //Pared inferior
+                    particle.setY(particle.getRadius());
+                if(Math.abs(particle.getY() + particle.getRadius() - height) < umbralError) //Pared superior
+                    particle.setY(height-particle.getRadius());
+
+
+
+                if ((finalY>0&&finalY<(height-grooveLength)/2) || (finalY<height&&finalY>height-(height-grooveLength)/2)) {
+                    if(Math.abs(particle.getX() + particle.getRadius() - width/2) < umbralError) //Tabique izquierda
+                        particle.setX(width/2 - particle.getRadius());
+                    if(Math.abs(particle.getX() - particle.getRadius() - width/2) < umbralError) //Tabique derecha
+                        particle.setX(width/2 + particle.getRadius());
+                }
+            }
+
+
+
+            //Estos chequeos son para verificar errores de redondeo de la computadora
+            if(particle.getX()<particle.getRadius())
+                System.out.println("particula "+i +" dio con x izq " + particle.getX());
+            if(particle.getX() > width - particle.getRadius())
+                System.out.println("particula "+i +" dio con x der " + particle.getX());
+            if(particle.getY()<particle.getRadius())
                 System.out.println("particula "+i +" dio con y neg " + particle.getY());
+            if(particle.getY() > height - particle.getRadius())
+                System.out.println("particula "+i +" dio con y neg " + particle.getY());
+
+            if ((finalY>0&&finalY<(height-grooveLength)/2) || (finalY<height&&finalY>height-(height-grooveLength)/2)) {
+                if((particle.getX() > width/2 - particle.getRadius()) && (particle.getX() < width/2 + particle.getRadius())) { //Tabique
+                    System.out.println("particula " + i + ". Antes: dio con x mal izq " + particle.getX());
+                    System.out.println(collitedParticles.contains(particle));
+                    this.mostrarTiempo = true;
+                }
+
+            }
+
+            //TODO agregar chequeos de paredes del medio
             this.particles.set(i, particle);
         }
         for(int i =0;i<collisionTimes.length;i++){
@@ -239,6 +302,11 @@ public class Environment {
                 collisionTimes[i][j]-=timeForFirstCollision;
             }
         }
+    }
+    public boolean mostrarTiempo = false; //TODO sacar, es para debug
+    private boolean isInTheGroove(Particle particle) {
+        return (particle.getY() > height/2 - grooveLength/2 + particle.getRadius())
+                && (particle.getY() < height/2 + grooveLength/2 - particle.getRadius());
     }
 
     public void calculateNewVelocities() {
