@@ -13,6 +13,7 @@ public class Environment {
     private double timeForFirstCollision;
     CollitedObject collitedObject1, collitedObject2;
     Particle grooveParticleTop,grooveParticleBottom;
+    private double totalImpulse;
 
 
 
@@ -27,6 +28,7 @@ public class Environment {
         this.collitedObject2 = null;
         this.grooveParticleBottom=new Particle(width/2,(height-grooveLength)/2,0,0,0,0,true);
         this.grooveParticleTop=new Particle(width/2,height-(height-grooveLength)/2,0,0,0,0,true);
+        this.totalImpulse=0;
 
 
         for(int i = 0; i < this.collisionTimes.length; i++)
@@ -331,12 +333,44 @@ public class Environment {
 
     }
 
+
     public void addImpulse() {
-        if(collitedObject2.getObjectType() == Wall.class) {
-            Particle particle = (Particle) collitedObject1.getObject();
-            Wall wall = (Wall) collitedObject2.getObject();
-            //TODO
+
+        if (!llegoAl50){
+            this.timeTo50+=timeForFirstCollision;
+            return;
         }
+        if (collitedObject1.getObjectType() != Wall.class && collitedObject2.getObjectType() != Wall.class)
+            return;
+
+
+
+        Particle particle;
+        Wall wall;
+        if(collitedObject2.getObjectType() == Wall.class) {
+            particle = (Particle) collitedObject1.getObject();
+            wall = (Wall) collitedObject2.getObject();
+        }
+        else {
+            particle = (Particle) collitedObject2.getObject();
+            wall = (Wall) collitedObject1.getObject();
+        }
+        switch (wall.getDirection()){
+            case LEFT:
+            case RIGHT:
+            case LOWER_GROOVE:
+            case UPPER_GROOVE:
+                totalImpulse+=Math.abs(particle.getMass()*particle.getVx()*2);
+                break;
+            case LOWER:
+            case UPPER:
+                totalImpulse+=Math.abs(particle.getMass()*particle.getVy()*2);
+                break;
+        }
+
+    }
+    public double getTotalImpulse(){
+        return this.totalImpulse;
     }
 
     public int getCantParticlesLeftSide() {
@@ -355,6 +389,8 @@ public class Environment {
     int counterTo50 = 0;
     int counter = 0;
     boolean llegoAl50 = false;
+
+    double timeTo50=0;
 
     public boolean stopCriteria() {
         counter++;

@@ -11,6 +11,8 @@ public class Config {
     private double grooveLength;
     private int numberParticles;
 
+    private double particleVelocity;
+
 
     List<Particle> particles = new ArrayList<>();
 
@@ -46,7 +48,12 @@ public class Config {
         if(staticReader.hasNextLine())
             numberParticles = Integer.parseInt(staticReader.nextLine());
         else
-            throw new Exception("Number of particles must be in line 7");
+            throw new Exception("Number of particles must be in line 6");
+
+        if(staticReader.hasNextLine())
+            particleVelocity = Double.parseDouble(staticReader.nextLine());
+        else
+            throw new Exception("Particle Velocity must be in line 7");
 
         staticReader.close();
 
@@ -85,6 +92,8 @@ public class Config {
         dynamicReader.close();
     }
 
+
+
     public Config (String staticInputFilename) throws Exception {
         parseStaticInput(staticInputFilename);
     }
@@ -115,5 +124,9 @@ public class Config {
 
     public List<Particle> getParticles() {
         return particles;
+    }
+
+    public double getParticleVelocity() {
+        return particleVelocity;
     }
 }
