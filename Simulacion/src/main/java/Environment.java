@@ -288,10 +288,8 @@ public class Environment {
                     System.out.println("particula mal " + i + ". dio con x " + particle.getX() + " " + particle.getY());
                     System.out.println(collitedParticles.contains(particle));
                 }
-
             }
 
-            //TODO agregar chequeos de paredes del medio
             this.particles.set(i, particle);
         }
         for(int i =0;i<collisionTimes.length;i++){
@@ -333,6 +331,14 @@ public class Environment {
 
     }
 
+    public void addImpulse() {
+        if(collitedObject2.getObjectType() == Wall.class) {
+            Particle particle = (Particle) collitedObject1.getObject();
+            Wall wall = (Wall) collitedObject2.getObject();
+            //TODO
+        }
+    }
+
     public int getCantParticlesLeftSide() {
         double limit = width / 2 - particles.get(0).getRadius();
 
@@ -346,18 +352,27 @@ public class Environment {
         return leftSideParticlesCounter;
     }
 
+    int counterTo50 = 0;
+    int counter = 0;
+    boolean llegoAl50 = false;
 
     public boolean stopCriteria() {
-        //TODO ver si parametrizar el porcentaje o ver que opina german
-
+        counter++;
         int totalParticles = particles.size();
-
         int leftSideParticlesCounter = this.getCantParticlesLeftSide();
+        double fraccionIzq = ((double)leftSideParticlesCounter / totalParticles);
+        if(fraccionIzq <= 0.5) {
+            if(!llegoAl50)
+                counterTo50 = counter;
+            llegoAl50 = true;
+        }
 
 
-//        System.out.println(leftSideParticlesCounter);
-        return ((double)leftSideParticlesCounter / totalParticles) >= 0.495
-                && ((double)leftSideParticlesCounter / totalParticles) <= 0.55;
+        return llegoAl50 && counter > counterTo50 * 2;
+
+
+        //return  >= 0.495
+                //&& ((double)leftSideParticlesCounter / totalParticles) <= 0.55;
 
 
     }

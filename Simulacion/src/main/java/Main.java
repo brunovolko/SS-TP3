@@ -24,6 +24,7 @@ public class Main {
                 environment.evolve(tc);
                 totalTimePassed+=tc;
                 saveState(pw, totalTimePassed, environment.getState());
+                environment.addImpulse();
                 environment.calculateNewVelocities();
             }
 
