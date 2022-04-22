@@ -22,11 +22,6 @@ public class Main {
                 environment.recalculateCollisions(environment.getParticlesToRecalculate());
                 tc = environment.timeToNextCollision();
                 environment.evolve(tc);
-                if(environment.mostrarTiempo) {
-                    System.out.println(++t);
-                    environment.mostrarTiempo = false;
-                }
-
                 totalTimePassed+=tc;
                 saveState(pw, totalTimePassed, environment.getState());
                 environment.calculateNewVelocities();
