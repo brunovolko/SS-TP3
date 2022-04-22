@@ -8,3 +8,9 @@ Simulacion/target/
 *.png
 
 *.avi
+
+Visualizacion/static_input.txt
+
+Visualizacion/dynamic_output.xyz
+
+Visualizacion/evolucion_distribucion.csv
