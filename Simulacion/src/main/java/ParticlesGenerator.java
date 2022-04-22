@@ -55,8 +55,8 @@ public class ParticlesGenerator {
             newx = random.nextDouble()*(limiteDerechoParaCentro - limiteIzquierdoParaCentro) + limiteIzquierdoParaCentro;
             newy = random.nextDouble()*(limiteSuperiorParaCentro - limiteInferiorParaCentro) + limiteInferiorParaCentro;
             degree = random.nextDouble()*2*Math.PI;
-            newvx = 0.01 * Math.cos(degree);
-            newvy = 0.01 * Math.sin(degree);
+            newvx = config.getParticleVelocity() * Math.cos(degree);
+            newvy = config.getParticleVelocity() * Math.sin(degree);
             newParticle = new Particle(newx, newy, config.getParticleRadius(), config.getMass(), newvx, newvy, false);
             if(noColitions(generatedParticles, newParticle))
                 generatedParticles.add(newParticle);
