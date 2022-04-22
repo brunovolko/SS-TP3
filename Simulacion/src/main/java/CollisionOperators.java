@@ -21,6 +21,7 @@ public class CollisionOperators {
     }
 
     public static void particleToFixedParticle(List<Particle> particles, Particle particle, Particle fixedParticle) {
+
         int idx1 = particles.indexOf(particle);
 
         double d = Math.sqrt(Math.pow(particle.getX() - fixedParticle.getX(), 2) + Math.pow(particle.getY() - fixedParticle.getY(), 2));

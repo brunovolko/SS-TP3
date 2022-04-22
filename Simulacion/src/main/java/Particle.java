@@ -70,16 +70,17 @@ public class Particle {
         return Math.pow(this.getX() - other.getX(), 2) + Math.pow(this.getY() - other.getY(), 2) <= Math.pow(this.getRadius() + other.getRadius(),2);
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Particle particle = (Particle) o;
-        return Double.compare(particle.x, x) == 0 && Double.compare(particle.y, y) == 0 && Double.compare(particle.radius, radius) == 0 && Double.compare(particle.mass, mass) == 0 && Double.compare(particle.vx, vx) == 0 && Double.compare(particle.vy, vy) == 0;
+        return Double.compare(particle.x, x) == 0 && Double.compare(particle.y, y) == 0 && Double.compare(particle.radius, radius) == 0 && Double.compare(particle.mass, mass) == 0 && Double.compare(particle.vx, vx) == 0 && Double.compare(particle.vy, vy) == 0 && fixed == particle.fixed;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y, radius, mass, vx, vy);
+        return Objects.hash(x, y, radius, mass, vx, vy, fixed);
     }
 }
