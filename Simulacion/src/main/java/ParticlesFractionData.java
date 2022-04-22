@@ -3,7 +3,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ParticlesFractionData {
-
     public static void main(String[] args) throws FileNotFoundException {
 
         List<Particle> particleList; //Auxiliar
@@ -17,7 +16,7 @@ public class ParticlesFractionData {
 
             particleList = ParticlesGenerator.generate(config);
             environment = new Environment(particleList, config.getWidthLength(), config.getHeightLength(), config.getGrooveLength());
-            pw.println("t,promedio,desvio");
+            pw.println("t,fraccion");
             pw.println("0.0,1.0");
 
             double totalTimePassed = 0;

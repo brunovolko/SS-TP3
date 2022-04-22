@@ -11,6 +11,7 @@ public class Environment {
     private double width, height, grooveLength;
     private double[][] collisionTimes;
     private double timeForFirstCollision;
+    private double totalTimePassed = 0; //TODO sacar, se usa solo para graficos
     CollitedObject collitedObject1, collitedObject2;
     Particle grooveParticleTop,grooveParticleBottom;
 
@@ -60,6 +61,7 @@ public class Environment {
         this.timeForFirstCollision = time;
         this.collitedObject1 = collitedObject1;
         this.collitedObject2 = collitedObject2;
+        this.totalTimePassed += time;
     }
 
     private double timeToParticlesCollision(Particle particle1, Particle particle2) {
@@ -356,7 +358,7 @@ public class Environment {
     int counter = 0;
     boolean llegoAl50 = false;
 
-    public boolean stopCriteria() {
+    public boolean stopCriteria() { //TODO antes de entregar ponerlo con criterio decidigo
         counter++;
         int totalParticles = particles.size();
         int leftSideParticlesCounter = this.getCantParticlesLeftSide();
@@ -368,7 +370,7 @@ public class Environment {
         }
 
 
-        return llegoAl50 && counter > counterTo50 * 2;
+        return llegoAl50 && counter > counterTo50 * 2 && totalTimePassed >= 800;
 
 
         //return  >= 0.495
