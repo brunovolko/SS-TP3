@@ -397,16 +397,17 @@ public class Environment {
         int totalParticles = particles.size();
         int leftSideParticlesCounter = this.getCantParticlesLeftSide();
         double fraccionIzq = ((double)leftSideParticlesCounter / totalParticles);
-        /*counter++;
+        counter++;
         if(fraccionIzq <= 0.5) {
             if(!llegoAl50)
                 counterTo50 = counter;
             llegoAl50 = true;
         }
 
+        return llegoAl50 && counter > counterTo50 * 2;
 
-        return llegoAl50 && counter > counterTo50 * 2 && totalTimePassed >= 800;*/
-        return fraccionIzq <= 0.55;
+        //return llegoAl50 && counter > counterTo50 * 2 && totalTimePassed >= 800;
+      //  return fraccionIzq <= 0.55;
 
 
 

@@ -129,4 +129,7 @@ public class Config {
     public double getParticleVelocity() {
         return particleVelocity;
     }
+    public void setParticleVelocity(double velocity) {
+        this.particleVelocity=velocity;
+    }
 }
