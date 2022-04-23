@@ -249,7 +249,7 @@ public class Environment {
 
         //Calculamos nuevas posiciones de acuerdo a ecuaciones de MRU hasta tc
         Particle particle;
-        double umbralError = 0.000000000000001;
+        double umbralError = 0.00000000000001;
         for(int i = 0; i < this.particles.size(); i++) {
             particle = this.particles.get(i);
             particle.setX(particle.getX() + particle.getVx()*tc);
@@ -393,11 +393,11 @@ public class Environment {
     boolean llegoAl50 = false;
 
     double timeTo50=0;
-    public boolean stopCriteria() { //TODO antes de entregar ponerlo con criterio decidigo
-        counter++;
+    public boolean stopCriteria() { //TODO antes de entregar ponerlo con criterio decidido
         int totalParticles = particles.size();
         int leftSideParticlesCounter = this.getCantParticlesLeftSide();
         double fraccionIzq = ((double)leftSideParticlesCounter / totalParticles);
+        /*counter++;
         if(fraccionIzq <= 0.5) {
             if(!llegoAl50)
                 counterTo50 = counter;
@@ -405,11 +405,9 @@ public class Environment {
         }
 
 
-        return llegoAl50 && counter > counterTo50 * 2 && totalTimePassed >= 800;
+        return llegoAl50 && counter > counterTo50 * 2 && totalTimePassed >= 800;*/
+        return fraccionIzq <= 0.55;
 
-
-        //return  >= 0.495
-                //&& ((double)leftSideParticlesCounter / totalParticles) <= 0.55;
 
 
     }
