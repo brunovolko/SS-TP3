@@ -1,6 +1,12 @@
 import pandas
 import numpy as np
+import csv
+
 from matplotlib import pyplot as plt
+
+f = open('avgs.csv', 'w')
+writer = csv.writer(f)
+writer.writerow(['avgs','energia'])
 
 static_file = open('static_input.txt', 'r')
 df = pandas.read_csv('pressure-results.csv')
@@ -22,18 +28,21 @@ while i<=limit:
     ax.set_ylim([0,18])
     ax.set_xlim([0,0.4])
 
-  #  plt.plot(x,y,linewidth=0.1)
+
+    plt.plot(x,y,linewidth=0.1)
 
     key = 'p'+str(i)
     plt.plot(cant*vel*vel*mass/2, df[key].mean())
     plt.errorbar(cant*vel*vel*mass/2, df[key].mean(), df[key].std(), linestyle='None', marker='')
 
     energia = cant*vel*vel*mass/2
-    print(str(df[key].mean())+ ',' + str(energia))
+    writer.writerow([str(df[key].mean()) , str(energia)])
     vel += 0.01
     i+=1
 
 plt.xlabel('Temperatura(J)')
 plt.ylabel('Presion(N/m)')
 
-plt.savefig('presion_sobre_temperatura.png')
+plt.savefig('presion_sobre_temperatura_con_linea.png')
+
+f.close()
