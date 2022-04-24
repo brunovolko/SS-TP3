@@ -28,7 +28,6 @@ public class TimeToBalanceData {
                     environment.calculateNewVelocities();
                 }
                 pw.println(totalTimePassed);
-                System.out.println(i+1); //TODO sacar print
             }
 
 
