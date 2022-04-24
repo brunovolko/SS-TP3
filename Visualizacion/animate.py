@@ -53,7 +53,7 @@ vp.zoom_all()
 add_vertical_line(vp)
 add_groove(vp, groove)
 
-vp.render_anim(size=(800,600), filename="animation.avi", fps=8, every_nth=1)
+vp.render_anim(size=(800,600), filename="animation.avi", fps=100, every_nth=1)
 #vp.render_image(size=(800,600), filename="image.png")
 
 

@@ -9,7 +9,7 @@ groove = float(static_file.readline())
 cant = int(static_file.readline())
 v0 = float(static_file.readline())
 
-TIME_GAP = 0.5
+TIME_GAP = 0.05
 
 f = open("animation_input.xyz", "w")
 eventos = list()
