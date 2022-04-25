@@ -25,7 +25,7 @@ public class ParticlePressureData {
             for(int iteration = 0;iteration<limit;iteration++) {
                 config.setParticleVelocity(aux+iteration*0.01);
                 System.out.println(config.getParticleVelocity());
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 20; i++) {
                     particleList = ParticlesGenerator.generate(config);
                     environment = new Environment(particleList, config.getWidthLength(), config.getHeightLength(), config.getGrooveLength());
 
