@@ -2,6 +2,12 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/*
+Registra la evolución de la fracción de particulas a izquierda.
+Lee la configuracion de static_input.txt
+Genera evolucion_distribucion.csv
+ */
+
 public class ParticlesFractionData {
     public static void main(String[] args) throws FileNotFoundException {
 

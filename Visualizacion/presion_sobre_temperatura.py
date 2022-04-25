@@ -1,8 +1,10 @@
 import pandas
 import numpy as np
 import csv
-
 from matplotlib import pyplot as plt
+
+#Lee static_input.txt y pressure-results.csv
+#Genera gráfico gráfico con presion respecto a temperatura
 
 f = open('avgs.csv', 'w')
 writer = csv.writer(f)

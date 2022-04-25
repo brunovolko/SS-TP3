@@ -1,13 +1,18 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Main {
     private static int t = 0;
     private static double totalTimePassed=0;
+
+    /*
+    Ejecución de simulacion.
+    Requiere los archivos static_input.txt y dynamic_input.txt
+    Genera dynamic_output.txt
+    Para el dynamic_input.txt se puede usar el ParticlesGenerator
+     */
 
     public static void main(String[] args) {
         File file = new File("dynamic_output.txt");

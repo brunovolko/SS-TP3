@@ -2,6 +2,9 @@ import pandas
 from matplotlib import pyplot as plt
 import numpy as np
 
+#Lee evolucion_distribucion1.csv, evolucion_distribucion2.csv, evolucion_distribucion3.csv y evolucion_distribucion4.csv
+#Genera gráfico con los 4 plots.
+
 df_100_02 = pandas.read_csv('evolucion_distribucion1.csv')
 df_300_02 = pandas.read_csv('evolucion_distribucion2.csv')
 df_100_045 = pandas.read_csv('evolucion_distribucion3.csv')

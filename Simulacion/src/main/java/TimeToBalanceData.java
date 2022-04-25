@@ -2,6 +2,12 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 
+/*
+Dada una configuracion leida de static_input.txt
+realiza 20 simulaciones distintas y registra su tiempo para llegar al equilibrio.
+Genera time_to_balance.csv
+ */
+
 public class TimeToBalanceData {
     private static final int runsNum = 20;
     public static void main(String[] args) {

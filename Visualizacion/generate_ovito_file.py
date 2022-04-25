@@ -1,3 +1,7 @@
+#Lee dynamic_output.txt y static_input.txt
+#Genera archivo a ser usado por animate.py
+#Toma eventos cada 0.05 segundos
+
 static_file = open('static_input.txt', 'r')
 dynamic_file = open('dynamic_output.txt', 'r')
 

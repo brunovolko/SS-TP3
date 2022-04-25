@@ -2,6 +2,8 @@ import pandas
 from matplotlib import pyplot as plt
 import numpy as np
 
+#Lee evolucion_distribucion.csv y genera gráfico
+
 df = pandas.read_csv('evolucion_distribucion.csv')
 min_value = df['fraccion'].min()
 plt.plot(df['t'], df['fraccion'])

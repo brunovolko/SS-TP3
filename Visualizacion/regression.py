@@ -2,6 +2,8 @@ import numpy as np
 import pandas
 from matplotlib import pyplot as plt
 
+#Grafica curva de error respecto a pendiente m
+
 
 
 def fun(x,m):

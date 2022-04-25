@@ -1,9 +1,11 @@
 from audioop import add
 from ovito.io import import_file, export_file
 from ovito.modifiers import AffineTransformationModifier
-from ovito.vis import Viewport, PythonViewportOverlay, TextLabelOverlay
-import math
+from ovito.vis import Viewport, PythonViewportOverlay
 from ovito.qt_compat import QtCore
+
+#Genera animacion a partir del archivo animation_input.xyz
+#El archivo resultante es animation.avi
 
 offset_top = 164
 pixels_height = 273 #vale solo para 0.09 de alto

@@ -5,11 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+Registra presiones en equilibrio.
+Lee static_input.txt
+Genera pressure-results.csv
+ */
+
 public class ParticlePressureData {
     public static void main(String[] args) throws Exception {
-        List<Particle> particleList; //Auxiliar
+        List<Particle> particleList;
         Environment environment;
-        int auxCantParticlesLeft;
         double tc;
         Map<Integer,List<Double>> results = new HashMap<>();
         OutputStream os = new FileOutputStream("pressure-results.csv");
@@ -18,8 +23,6 @@ public class ParticlePressureData {
 
             double aux = config.getParticleVelocity();
 
-            //pw.println("presion");
-            //pw.println(String.format("N particles: %d,Velocity: %g",config.getNumberParticles(),config.getParticleVelocity() ));
 
             int limit = 8;
             for(int iteration = 0;iteration<limit;iteration++) {

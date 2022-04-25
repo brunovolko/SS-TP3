@@ -1,4 +1,5 @@
 t0
+tiempo tc0
 x y vx vy
 x y vx vy
 x y vx vy

@@ -5,6 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/*
+Genera particulas distribuidas uniformemente en el recinto izquierdo.
+Requiere del archivo static_input.txt.
+Genera dynamic_input.txt
+ */
+
 public class ParticlesGenerator {
     private static boolean noColitions(List<Particle> particles, Particle newParticle) {
         for (Particle particle : particles) {
@@ -18,7 +24,6 @@ public class ParticlesGenerator {
         File file = new File("dynamic_input.txt");
         try(PrintWriter pw = new PrintWriter(file)){
             pw.println("t0");
-            int aux=0;
             for(Particle particle : particles){
                 pw.println(particle.getX() + " " + particle.getY() + " " + particle.getVx() + " " + particle.getVy());
             }

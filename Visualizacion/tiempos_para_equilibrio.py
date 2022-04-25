@@ -1,6 +1,7 @@
 import pandas
 from matplotlib import pyplot as plt
-import numpy as np
+
+
 
 id = 0
 fig, ax = plt.subplots()
